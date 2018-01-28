@@ -26,11 +26,15 @@ public class StringReader extends AbstractProducer<String> {
             String line;
             while ((line = reader.readLine()) != null) {
                 Iterator<DataQueue<String>> iterator = queues.iterator();
-                if (!iterator.hasNext()) break;
+                if (!iterator.hasNext()) {
+                    LOGGER.debug("No queues available to offer data.");
+                    break;
+                }
                 while (iterator.hasNext()) {
                     DataQueue<String> queue = iterator.next();
                     boolean isAdded = queue.offer(line);
                     if (!isAdded) {
+                        LOGGER.debug("Can't offer data into queue - it's full.");
                         queue.setContinueProducing(false);
                         iterator.remove();
                     }

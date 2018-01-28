@@ -21,14 +21,17 @@ public class Main {
 
             ExecutorService executorService = Executors.newFixedThreadPool(numberOfCopies + 1);
 
+            // start consumer(s)
             List<DataQueue<String>> buffers = new ArrayList<>();
             for (int i = 1; i <= numberOfCopies; i++) {
                 DataQueue<String> dataQueue = new DataQueue<>(100);
                 executorService.execute(new StringWriter(dataQueue, new File("(" + i + ")" + sourceFile)));
                 buffers.add(dataQueue);
             }
-
+            // start producer
             Future producerStatus = executorService.submit(new StringReader(buffers, new File(sourceFile)));
+
+            // wait for producer to finish its execution
             producerStatus.get();
             executorService.shutdown();
         } catch (Exception e) {
