@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 
-public abstract class AbstractConsumer<T> implements Runnable {
+public abstract class AbstractConsumer<T> implements Callable<String> {
 
     protected DataQueue<T> queue;
 

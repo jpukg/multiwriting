@@ -20,8 +20,15 @@ public class StringWriter extends AbstractConsumer<String> {
         this.file = file;
     }
 
+    /**
+     * Read queue and write the file
+     *
+     * @return the created file name
+     * @throws InterruptedException
+     * @throws IOException
+     */
     @Override
-    public void run() {
+    public String call() throws InterruptedException, IOException{
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             String data = queue.get();
             while (queue.isContinueProducing() || data != null) {
@@ -31,10 +38,7 @@ public class StringWriter extends AbstractConsumer<String> {
                 }
                 data = queue.get();
             }
-        } catch (InterruptedException e) {
-            LOGGER.error("Can't get the data from the queue.", e);
-        } catch (IOException e) {
-            LOGGER.error("Can't write into file.", e);
+            return file.toString();
         }
     }
 }

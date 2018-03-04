@@ -20,11 +20,20 @@ public class StringReader extends AbstractProducer<String> {
         this.file = file;
     }
 
+    /**
+     * Read the file and populate the queues
+     *
+     * @return number of read lines
+     * @throws InterruptedException
+     * @throws IOException
+     */
     @Override
-    public void run() {
+    public Integer call() throws InterruptedException, IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
+            int lineCnt = 0;
             while ((line = reader.readLine()) != null) {
+                lineCnt++;
                 Iterator<DataQueue<String>> iterator = queues.iterator();
                 if (!iterator.hasNext()) {
                     LOGGER.debug("No queues available to offer data.");
@@ -40,12 +49,7 @@ public class StringReader extends AbstractProducer<String> {
                     }
                 }
             }
-        } catch (InterruptedException e) {
-            LOGGER.error("Can't insert data into queue.", e);
-        } catch (FileNotFoundException e) {
-            LOGGER.error("Can't find a file.", e);
-        } catch (IOException e) {
-            LOGGER.error("Can't read a file.", e);
+            return lineCnt;
         } finally {
             for (DataQueue<String> queue : queues) {
                 queue.setContinueProducing(false);
